@@ -13,6 +13,54 @@
 
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap');
 
+        /* Splash screen overlay */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #splashScreen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash-content {
+            text-align: center;
+            animation: fadeInImage 1.5s ease-in-out;
+        }
+
+        .splash-image {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            display: block;
+            border: none;
+            box-shadow: none;
+        }
+
+        @keyframes fadeInImage {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
         body {
             font-family: 'Chicago', 'Monaco', monospace;
             display: flex;
@@ -43,6 +91,12 @@
             left: 50%;
             transform: translateX(-50%);
             user-select: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in 2s;
+        }
+
+        .window.show {
+            opacity: 1;
         }
 
         /* Title bar */
@@ -256,6 +310,13 @@
     </style>
 </head>
 <body>
+    <!-- Splash screen -->
+    <div id="splashScreen">
+        <div class="splash-content">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 960' width='800' height='600'%3E%3Crect fill='%230066cc' width='1280' height='960'/%3E%3Ctext x='640' y='200' font-size='120' font-weight='bold' text-anchor='middle' fill='black' font-family='Arial'%3ECall%3C/text%3E%3Ctext x='640' y='350' font-size='120' font-weight='bold' text-anchor='middle' fill='black' font-family='Arial'%3EDismissed%3C/text%3E%3Ctext x='640' y='480' font-size='80' font-weight='bold' text-anchor='middle' fill='white' font-family='Arial'%3E95%3C/text%3E%3Ctext x='640' y='600' font-size='60' text-anchor='middle' fill='white' font-family='Arial' font-style='italic'%3ECall clothes Explorer%3C/text%3E%3C/svg%3E" alt="Call Dismissed 95" class="splash-image">
+        </div>
+    </div>
+
     <div class="window" id="window">
         <div class="title-bar" id="titleBar">
             <span class="title-text">Countdown Timer</span>
@@ -310,7 +371,31 @@
         </div>
     </div>
 
+    <!-- Hidden audio element for boot sound -->
+    <audio id="bootSound" preload="auto"></audio>
+
     <script>
+        // Splash screen fade out and window fade in
+        window.addEventListener('load', () => {
+            // Play boot sound
+            const audio = document.getElementById('bootSound');
+            if (audio.src) {
+                audio.play().catch(err => console.log('Audio playback failed:', err));
+            }
+
+            // Fade out splash screen after 3 seconds
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.classList.add('fade-out');
+
+                // Show timer window after splash fades
+                setTimeout(() => {
+                    const window = document.getElementById('window');
+                    window.classList.add('show');
+                }, 100);
+            }, 3000);
+        });
+
         // Window dragging functionality
         const windowEl = document.getElementById('window');
         const titleBar = document.getElementById('titleBar');
