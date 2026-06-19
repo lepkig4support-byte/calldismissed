@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer - 1 września 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400&display=swap');
+
+        body {
+            font-family: 'Chicago', 'Monaco', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #dfdfdf;
+            padding: 20px;
+        }
+
+        /* Windows 95 style window */
+        .window {
+            position: fixed;
+            background: #c0c0c0;
+            border: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            box-shadow: 1px 1px 0 #ffffff inset, -1px -1px 0 #000000 inset;
+            width: 600px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            user-select: none;
+        }
+
+        /* Title bar */
+        .title-bar {
+            background: linear-gradient(to right, #000080, #1084d7);
+            color: white;
+            padding: 2px 2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            letter-spacing: 0px;
+            cursor: move;
+            user-select: none;
+            flex-shrink: 0;
+            height: 20px;
+        }
+
+        .title-text {
+            padding: 2px 4px;
+            flex: 1;
+        }
+
+        .title-buttons {
+            display: flex;
+            gap: 2px;
+            padding-right: 2px;
+        }
+
+        .window-button {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border: 1px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: black;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .window-button:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+
+        .window-button:hover {
+            background: #000080;
+            color: white;
+        }
+
+        /* Menu bar */
+        .menu-bar {
+            display: flex;
+            background: #c0c0c0;
+            border-bottom: 2px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 1px 1px;
+            gap: 0;
+            font-size: 11px;
+            font-family: 'MS Sans Serif', Arial, sans-serif;
+            flex-shrink: 0;
+        }
+
+        .menu-item {
+            padding: 2px 4px;
+            cursor: pointer;
+            user-select: none;
+            border: 1px solid transparent;
+        }
+
+        .menu-item:hover {
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            background: #000080;
+            color: white;
+        }
+
+        .menu-item:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+
+        /* Window content */
+        .content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            background: #c0c0c0;
+            flex: 1;
+        }
+
+        .timer-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .time-unit-value {
+            font-size: 3.5em;
+            font-weight: 300;
+            color: white;
+            letter-spacing: 2px;
+            font-family: 'Space Mono', monospace;
+            line-height: 1;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .time-unit-label {
+            font-size: 0.65em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 1px;
+            font-weight: 300;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .separator {
+            font-size: 3em;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+
+        .finished {
+            display: none;
+            font-size: 2.5em;
+            color: #fff;
+            font-weight: 300;
+            padding: 40px;
+            margin-top: 20px;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .finished.show {
+            display: block;
+        }
+
+        .minecraft-block {
+            margin-top: 0;
+        }
+
+        .block-link {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .block-link:hover {
+            transform: rotateX(10deg) rotateY(10deg) scale(1.05);
+        }
+
+        .block-link:active {
+            transform: rotateX(10deg) rotateY(10deg) scale(0.95);
+        }
+
+        .block-img {
+            width: 100px;
+            height: 100px;
+            display: block;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        /* Status bar */
+        .status-bar {
+            background: #c0c0c0;
+            border-top: 1px solid;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 2px 2px;
+            font-size: 11px;
+            display: flex;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .status-item {
+            border: 1px solid;
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+            padding: 2px 4px;
+            flex: 1;
+            background: #c0c0c0;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 640px) {
+            .window {
+                width: calc(100% - 20px);
+            }
+            .time-unit-value { font-size: 2.2em; }
+            .separator { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="window" id="window">
+        <div class="title-bar" id="titleBar">
+            <span class="title-text">Countdown Timer</span>
+            <div class="title-buttons">
+                <button class="window-button" id="minimizeBtn">_</button>
+                <button class="window-button" id="maximizeBtn">□</button>
+                <button class="window-button" id="closeBtn">×</button>
+            </div>
+        </div>
+
+        <div class="menu-bar">
+            <div class="menu-item">File</div>
+            <div class="menu-item">Edit</div>
+            <div class="menu-item">View</div>
+            <div class="menu-item">Help</div>
+        </div>
+
+        <div class="content">
+            <div class="timer-display">
+                <div class="time-unit">
+                    <span class="time-unit-value" id="days">00</span>
+                    <span class="time-unit-label">Days</span>
+                </div>
+                <div class="separator">:</div>
+                <div class="time-unit">
+                    <span class="time-unit-value" id="hours">00</span>
+                    <span class="time-unit-label">Hours</span>
+                </div>
+                <div class="separator">:</div>
+                <div class="time-unit">
+                    <span class="time-unit-value" id="minutes">00</span>
+                    <span class="time-unit-label">Minutes</span>
+                </div>
+                <div class="separator">:</div>
+                <div class="time-unit">
+                    <span class="time-unit-value" id="seconds">00</span>
+                    <span class="time-unit-label">Seconds</span>
+                </div>
+            </div>
+
+            <div class="minecraft-block">
+                <a href="https://classic.minecraft.net/" class="block-link">
+                    <img src="block.png" alt="Block" class="block-img">
+                </a>
+            </div>
+
+            <div class="finished" id="finished">🎉 Time's Up! 🎉</div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-item">Ready</div>
+        </div>
+    </div>
+
+    <script>
+        // Window dragging functionality
+        const windowEl = document.getElementById('window');
+        const titleBar = document.getElementById('titleBar');
+        let isDragging = false;
+        let currentX = 0;
+        let currentY = 0;
+        let initialX = 0;
+        let initialY = 0;
+
+        titleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            initialX = e.clientX - currentX;
+            initialY = e.clientY - currentY;
+            titleBar.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+                windowEl.style.transform = `translate(calc(-50% + ${currentX}px), ${currentY}px)`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            titleBar.style.cursor = 'move';
+        });
+
+        // Window control buttons
+        document.getElementById('closeBtn').addEventListener('click', () => {
+            windowEl.style.display = 'none';
+        });
+
+        document.getElementById('minimizeBtn').addEventListener('click', () => {
+            windowEl.style.display = windowEl.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        document.getElementById('maximizeBtn').addEventListener('click', () => {
+            if (windowEl.style.width === '100vw') {
+                windowEl.style.width = '600px';
+                windowEl.style.height = 'auto';
+                windowEl.style.top = '50px';
+                windowEl.style.left = '50%';
+                windowEl.style.transform = `translate(calc(-50% + ${currentX}px), ${currentY}px)`;
+            } else {
+                windowEl.style.width = '100vw';
+                windowEl.style.height = '100vh';
+                windowEl.style.top = '0';
+                windowEl.style.left = '0';
+                windowEl.style.transform = 'translate(0, 0)';
+            }
+        });
+
+        function updateTimer() {
+            // Target date: September 1, 2026 at 00:00:00
+            const targetDate = new Date('2026-09-01T00:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                // Timer finished
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                document.getElementById('finished').classList.add('show');
+                clearInterval(timerInterval);
+                return;
+            }
+
+            // Calculate time units
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update DOM
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+        }
+
+        // Update timer immediately and then every second
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
