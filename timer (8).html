@@ -26,7 +26,7 @@
             justify-content: center;
             z-index: 9999;
             opacity: 1;
-            transition: opacity 0.5s ease-out;
+            transition: opacity 0.8s ease-out;
         }
 
         #splashScreen.fade-out {
@@ -45,12 +45,10 @@
         }
 
         .splash-image {
-            max-width: 100%;
-            max-height: 100%;
             width: 100%;
             height: 100%;
             display: block;
-            object-fit: contain;
+            object-fit: cover;
             border: none;
             box-shadow: none;
         }
@@ -98,7 +96,7 @@
             transform: translateX(-50%);
             user-select: none;
             opacity: 0;
-            transition: opacity 0.5s ease-in 2s;
+            transition: opacity 0.5s ease-in 3.5s;
         }
 
         .window.show {
@@ -319,7 +317,7 @@
     <!-- Splash screen -->
     <div id="splashScreen">
         <div class="splash-content">
-            <img src="obwodka.png" alt="Call Dismissed 95" class="splash-image">
+            <img src="tło.png" alt="Splash Screen" class="splash-image">
         </div>
     </div>
 
@@ -383,13 +381,13 @@
     <script>
         // Splash screen fade out and window fade in
         window.addEventListener('load', () => {
-            // Play boot sound after a short delay
+            // Play boot sound after splash screen ends (after 3 seconds)
             setTimeout(() => {
                 const audio = document.getElementById('bootSound');
                 audio.play().catch(err => console.log('Audio playback failed:', err));
-            }, 500);
+            }, 3000);
 
-            // Fade out splash screen after 3 seconds
+            // Fade out splash screen to black after 3 seconds
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
                 splash.classList.add('fade-out');
